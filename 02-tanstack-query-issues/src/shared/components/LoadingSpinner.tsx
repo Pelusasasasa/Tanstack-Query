@@ -3,8 +3,8 @@ import { FiRefreshCw } from 'react-icons/fi'
 const LoadingSpinner = () => {
   return (
     <div className='loading'>
-        <div className='animate-spin'>
-            <FiRefreshCw size={40}/>
+        <div className='flex w-full h-52 justify-center items-center'>
+            <FiRefreshCw size={40} className='animate-spin'/>
         </div>
     </div>
   )
