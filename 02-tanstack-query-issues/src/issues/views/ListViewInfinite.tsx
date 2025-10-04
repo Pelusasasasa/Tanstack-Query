@@ -2,14 +2,14 @@ import { useState } from 'react';
 import LoadingSpinner from '../../shared/components/LoadingSpinner';
 import { IssueList } from '../components/IssueList';
 import { LabelPicker } from '../components/LabelPicker';
-import { useIssues } from '../hooks/useIssues';
 import { State } from '../interaces';
+import { useIssuesInfinite } from '../hooks';
 
-export const ListView = () => {
+export const ListViewInfinite = () => {
   const [ state, setState] = useState<State>(State.All);
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   
-  const { issuesQuery, page, nextaPage, prevPage } = useIssues({
+  const { issuesQuery } = useIssuesInfinite({
     state,
     selectedLabels
   });
@@ -22,7 +22,7 @@ export const ListView = () => {
     }
   };
 
-  const issues = issuesQuery.data || [];
+  const issues = issuesQuery.data?.pages.flat() || [];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 mt-5">
@@ -30,15 +30,12 @@ export const ListView = () => {
         {
           issuesQuery.isLoading ? <LoadingSpinner/> 
           : (
-            <>
+            <div className='flex flex-col justify-center'>
               <IssueList state={ state } onStateChange={setState} issues={issues}/>
-
-              <div className='flex justify-between items-center'>
-                <button onClick={prevPage} className='p-2 bg-blue-500 rounded-md hover:bg-blue-700 transition-all'>Anteriores</button>
-                <span>{page}</span>
-                <button onClick={nextaPage} className='p-2 bg-blue-500 rounded-md hover:bg-blue-700 transition-all'>Siguientes</button>
-              </div>
-            </>
+              <button disabled={issuesQuery.isFetchingNextPage} onClick={() => issuesQuery.fetchNextPage()} className='p-2 bg-blue-500 rounded-md hover:bg-blue-700 transition-all'>
+                {issuesQuery.isFetchingNextPage ? 'Cargando Mas...' : 'Cargar Mas'}
+              </button>
+            </div>
           )
         }
       </div>
